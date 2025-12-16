@@ -1,0 +1,138 @@
+#include<iostream>
+#include <queue>
+using namespace std;
+template<typename T>
+class binary_node {
+protected:
+	T element;
+	binary_node* left_node;
+	binary_node* right_node;
+public:
+	binary_node(T const& obj) {
+		element = obj;
+		left_node = nullptr;
+		right_node = nullptr;
+	}
+	T retrieve() {
+		return element;
+	}
+	binary_node<T>* left() {
+		return left_node;
+	}
+	binary_node<T>* right() {
+		return right_node;
+	}
+	bool empty() {
+		return(this == nullptr);
+	}
+	bool is_leaf() {
+		return !empty()&&left_node->empty() && right_node->empty();
+	}
+	int size() {
+		return empty() ? 0 : 1 + left()->size() + right()->size();
+	}
+	int height() {
+		return empty() ? -1 : 1 + std::max(left()->height(), right()->height());
+	}
+	void clear(binary_node<T>* ptr_to_this) {
+		if (ptr_to_this == nullptr) {
+			return;
+		}
+		left->clear(left_node);
+		right->clear(right_node);
+		delete this;
+		ptr_to_this = nullptr;
+	}
+	void setright(binary_node<T>* obj) {
+		right_node = obj;
+	}
+	void setleft(binary_node<T>* obj) {
+		left_node = obj;
+	}
+};
+template<typename T>
+class binary_tree {
+protected:
+	binary_node<T>* root_node;
+public:
+	binary_tree() {
+		root_node = nullptr;
+	}
+	binary_node<T>* root() {
+		return root_node;
+	}
+	bool empty() {
+		return root() == nullptr;
+	}
+	int size() {
+		return (root() == nullptr) ? 0 : root()->size();
+	}
+	int height() {
+		return(root() == nullptr) ? -1 : root()->height();
+	}
+	void inorder(binary_node<T>* r) {
+		if (r != nullptr) {
+			inorder(r->left());
+			cout << r->retrieve();
+			inorder(r->right());
+		}
+	}
+	void postorder(binary_node<T>* r) {
+		if (r != nullptr) {
+			postorder(r->left());
+			postorder(r->right());
+			cout << r->retrieve();
+		}
+	}
+	void preorder(binary_node<T>* r) {
+		if (r != nullptr) {
+			cout << r->retrieve();
+			postorder(r->left());
+			postorder(r->right());
+		}
+	}
+	void insert(T r) {
+		binary_node<T>* new_node = new binary_node<T>(r);
+		if (root() == nullptr) {
+			root_node = new_node;
+		}
+		queue<binary_node<T>*> q;
+		q.push(root_node);
+		while (!q.empty()) {
+			binary_node<T>* current = q.front();
+			q.pop();
+			if (current->left() == nullptr) {
+				current->setleft(new_node);
+				return;
+			}
+			else {
+				q.push(current->left());
+			}
+			if (current->right() == nullptr) {
+				current->setright(new_node);
+				return;
+			}
+			else {
+				q.push(current->right());
+			}
+		}
+	}
+};
+int main() {
+	binary_tree<int> b;
+	cout << b.empty();
+	cout << endl;
+	cout << "the size of the tree is  :" << b.size();
+	cout << endl;
+	cout << "the height of the tree is :" << b.height();
+	b.insert(10);
+	b.insert(8);
+	b.insert(18);
+	b.insert(28);
+	b.insert(12);
+	b.insert(10);
+	b.insert(0);
+	cout << "the tree is" << endl;
+	b.inorder(b.root());
+	return 0;
+}
